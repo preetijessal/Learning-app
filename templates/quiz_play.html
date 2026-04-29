@@ -1,0 +1,63 @@
+{% extends "base.html" %}
+{% block title %}Quiz — Tutoring with Sehaj{% endblock %}
+{% block content %}
+<h1>{{ topic }} — Grade {{ grade }}</h1>
+<div class="progress">
+    <span>Question {{ index }} of {{ total }}</span>
+    <div class="progress-bar"><span style="width: {{ (index / total * 100) | round }}%;"></span></div>
+</div>
+<div class="card">
+    {% if feedback %}
+        {% if feedback.correct %}
+            <div class="feedback correct">✓ Correct! Nice work.</div>
+        {% else %}
+            <div class="feedback wrong">✗ Not quite. The correct answer was <strong>{{ feedback.correct_answer }}</strong>.</div>
+        {% endif %}
+        <div class="encouragement" id="encouragement"></div>
+        {% if feedback.explanation %}
+        <div class="explanation">
+            <span class="explanation-label">Why:</span> {{ feedback.explanation }}
+        </div>
+        {% endif %}
+    {% endif %}
+    <div class="question-text">{{ question }}</div>
+    {% if hint %}
+    <details class="hint-box">
+        <summary>💡 Show hint</summary>
+        <div class="hint-text">{{ hint }}</div>
+    </details>
+    {% endif %}
+    <form method="POST">
+        {% if options %}
+            <div class="options">
+                {% for letter, text in options %}
+                <label class="option">
+                    <input type="radio" name="answer" value="{{ letter }}" required>
+                    <span class="option-letter">{{ letter }}</span>
+                    <span class="option-text">{{ text }}</span>
+                </label>
+                {% endfor %}
+            </div>
+        {% else %}
+            <label for="answer">Your Answer</label>
+            <input type="text" id="answer" name="answer" autocomplete="off" required autofocus>
+        {% endif %}
+        <div class="btn-row">
+            <button type="submit" class="btn btn-primary">Submit</button>
+            <a href="{{ url_for('quiz_setup') }}" class="btn btn-secondary">Quit</a>
+        </div>
+    </form>
+</div>
+{% if feedback %}
+<script>
+(function() {
+    var correct = {{ 'true' if feedback.correct else 'false' }};
+    var msgs = correct
+        ? ["You're awesome! 🌟", "Brilliant work! 💫", "On fire! 🔥", "Crushing it! 💪", "Nicely done! 🎉", "Keep going! 🚀", "Math wizard! ✨"]
+        : ["Don't worry, try the next one! 💜", "Mistakes help us learn! 🌱", "Almost! Keep going! 🌈", "You'll get the next one! 💫", "Stay curious! 🎯"];
+    var el = document.getElementById('encouragement');
+    if (el) el.textContent = msgs[Math.floor(Math.random() * msgs.length)];
+})();
+</script>
+{% endif %}
+{% endblock %}

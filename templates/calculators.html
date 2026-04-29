@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+{% block title %}Calculators — Tutoring with Sehaj{% endblock %}
+{% block content %}
+<h1>Math Calculators</h1>
+<p class="lead">Pick a calculator to compute area or volume instantly.</p>
+<div class="grid">
+    {% for slug, spec in calculators.items() %}
+    <a class="tile" href="{{ url_for('calculator', slug=slug) }}">
+        <h3>{{ spec.title }}</h3>
+        <p>{{ spec.formula }}</p>
+    </a>
+    {% endfor %}
+</div>
+{% endblock %}

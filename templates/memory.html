@@ -1,0 +1,55 @@
+{% extends "base.html" %}
+{% block title %}Memory Game — Tutoring with Sehaj{% endblock %}
+{% block content %}
+<h1>Memory Game</h1>
+<p class="lead">Flip two cards at a time to find matching pairs. Build your memory while learning!</p>
+<div class="card">
+    <form method="GET" class="memory-controls">
+        <div>
+            <label for="theme">Theme</label>
+            <select id="theme" name="theme" onchange="this.form.submit()">
+                {% for key, t in themes.items() %}
+                <option value="{{ key }}" {% if key == current_theme %}selected{% endif %}>{{ t.name }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div>
+            <label for="pairs">Difficulty</label>
+            <select id="pairs" name="pairs" onchange="this.form.submit()">
+                <option value="4" {% if pairs_count == 4 %}selected{% endif %}>Easy (4 pairs)</option>
+                <option value="6" {% if pairs_count == 6 %}selected{% endif %}>Medium (6 pairs)</option>
+                <option value="8" {% if pairs_count == 8 %}selected{% endif %}>Hard (8 pairs)</option>
+            </select>
+        </div>
+        <div class="memory-controls-actions">
+            <button type="submit" class="btn btn-accent">New Game</button>
+        </div>
+    </form>
+    <p class="memory-hint">{{ current_description }}</p>
+    <div class="memory-stats">
+        <div class="stat"><span class="stat-label">Moves</span><span class="stat-value" id="moves">0</span></div>
+        <div class="stat"><span class="stat-label">Matches</span><span class="stat-value"><span id="matches">0</span> / {{ total_pairs }}</span></div>
+        <div class="stat"><span class="stat-label">Time</span><span class="stat-value" id="timer">0s</span></div>
+    </div>
+    <div class="memory-board"
+         data-cols="4"
+         data-theme="{{ current_theme_name }}"
+         data-pairs="{{ total_pairs }}"
+         id="board">
+        {% for card in cards %}
+        <button class="memory-card" data-pair="{{ card.pair_id }}" data-index="{{ loop.index0 }}" type="button">
+            <span class="memory-card-inner">
+                <span class="memory-card-front">?</span>
+                <span class="memory-card-back">{{ card.text }}</span>
+            </span>
+        </button>
+        {% endfor %}
+    </div>
+    <div id="win-message" class="memory-win" hidden>
+        <div class="memory-win-title">🎉 You did it!</div>
+        <div class="memory-win-detail">Completed in <strong id="win-moves">0</strong> moves and <strong id="win-time">0s</strong>.</div>
+        <a href="{{ url_for('memory_game', theme=current_theme, pairs=pairs_count) }}" class="btn btn-primary" style="margin-top: 14px;">Play Again</a>
+    </div>
+</div>
+<script src="{{ url_for('static', filename='memory.js') }}"></script>
+{% endblock %}

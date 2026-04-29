@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+{% block title %}{{ spec.title }} — Tutoring with Sehaj{% endblock %}
+{% block content %}
+<h1>{{ spec.title }}</h1>
+<p class="lead">Enter the values and click Calculate. You'll see the answer and the full step-by-step solution.</p>
+<div class="card">
+    <form method="POST">
+        {% for key, label in spec.fields %}
+        <label for="{{ key }}">{{ label }}</label>
+        <input type="number" id="{{ key }}" name="{{ key }}" step="any" min="0"
+               value="{{ inputs[key] }}" required {% if loop.first %}autofocus{% endif %}>
+        {% endfor %}
+        <div class="btn-row">
+            <button type="submit" class="btn btn-primary">Calculate</button>
+            <a href="{{ url_for('calculator', slug=slug) }}" class="btn btn-secondary">Reset</a>
+            <a href="{{ url_for('calculators') }}" class="btn btn-secondary">All Calculators</a>
+        </div>
+    </form>
+    {% if error %}
+        <div class="error">{{ error }}</div>
+    {% endif %}
+    {% if result is not none %}
+        <div class="result">
+            <div class="label">Result</div>
+            <div class="value">{{ result }}</div>
+        </div>
+    {% endif %}
+    {% if steps %}
+    <div class="steps">
+        <h3 class="steps-title">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+            Step-by-Step Solution
+        </h3>
+        <ol class="steps-list">
+            {% for step in steps %}<li>{{ step }}</li>{% endfor %}
+        </ol>
+    </div>
+    {% endif %}
+    <div class="formula">{{ spec.formula }}</div>
+</div>
+{% endblock %}

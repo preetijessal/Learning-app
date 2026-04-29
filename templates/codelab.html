@@ -1,0 +1,73 @@
+{% extends "base.html" %}
+{% block title %}Code Lab — Tutoring with Sehaj{% endblock %}
+{% block content %}
+<h1>✨ Code Lab</h1>
+<p class="lead">Write your own code on the left and watch your webpage appear on the right. Try a starter to begin!</p>
+
+<div class="card">
+    <div class="codelab-starter-label">🚀 Try a starter:</div>
+    <div class="codelab-starters" id="starters"></div>
+</div>
+
+<div class="codelab-wrap">
+    <div class="codelab-pane">
+        <div class="codelab-pane-head">
+            <span class="codelab-pane-title">📝 Your Code</span>
+            <div class="codelab-pane-actions">
+                <button type="button" id="run-btn" class="btn btn-primary btn-sm">▶ Run</button>
+                <button type="button" id="clear-btn" class="btn btn-secondary btn-sm">Clear</button>
+            </div>
+        </div>
+        <textarea id="code-editor" spellcheck="false" placeholder="Type some HTML here, or click a starter above..."></textarea>
+    </div>
+    <div class="codelab-pane">
+        <div class="codelab-pane-head">
+            <span class="codelab-pane-title">👀 Live Preview</span>
+            <span class="codelab-auto-label"><input type="checkbox" id="auto-run" checked> Auto-run</span>
+        </div>
+        <iframe id="preview-frame" sandbox="allow-scripts" title="Preview"></iframe>
+    </div>
+</div>
+
+<div class="card">
+    <div class="codelab-save-row">
+        <input type="text" id="save-title" placeholder="Name your creation (e.g. My Pet Card)" maxlength="50">
+        <button type="button" id="save-btn" class="btn btn-accent">💾 Save Creation</button>
+    </div>
+    <h2 style="margin-top: 22px;">My Saved Creations</h2>
+    <div id="saves-list" class="saves-list"></div>
+    <div id="saves-empty" class="empty-state" hidden>
+        No creations saved yet. Build something cool and click "Save Creation"!
+    </div>
+</div>
+
+<details class="card cheatsheet">
+    <summary><strong>📚 HTML Cheat Sheet — handy tags to try</strong></summary>
+    <div class="cheat-grid">
+        <div class="cheat-item"><code>&lt;h1&gt;Big Title&lt;/h1&gt;</code><span>Largest heading</span></div>
+        <div class="cheat-item"><code>&lt;h2&gt;Smaller&lt;/h2&gt;</code><span>Smaller heading</span></div>
+        <div class="cheat-item"><code>&lt;p&gt;Some text&lt;/p&gt;</code><span>A paragraph</span></div>
+        <div class="cheat-item"><code>&lt;b&gt;bold&lt;/b&gt;</code><span>Bold text</span></div>
+        <div class="cheat-item"><code>&lt;i&gt;italic&lt;/i&gt;</code><span>Italic text</span></div>
+        <div class="cheat-item"><code>&lt;br&gt;</code><span>Line break</span></div>
+        <div class="cheat-item"><code>&lt;hr&gt;</code><span>Horizontal line</span></div>
+        <div class="cheat-item"><code>&lt;button&gt;Click&lt;/button&gt;</code><span>A clickable button</span></div>
+        <div class="cheat-item"><code>style="color: red"</code><span>Change text color</span></div>
+        <div class="cheat-item"><code>style="background: yellow"</code><span>Change background</span></div>
+        <div class="cheat-item"><code>style="font-size: 30px"</code><span>Bigger text</span></div>
+        <div class="cheat-item"><code>style="text-align: center"</code><span>Center the text</span></div>
+        <div class="cheat-item"><code>&lt;a href="..."&gt;Link&lt;/a&gt;</code><span>Make a link</span></div>
+        <div class="cheat-item"><code>&lt;ul&gt;&lt;li&gt;item&lt;/li&gt;&lt;/ul&gt;</code><span>Bullet list</span></div>
+        <div class="cheat-item"><code>onclick="alert('hi')"</code><span>Pop-up message</span></div>
+        <div class="cheat-item"><code>🐶 🌟 🎉 🍕 🚀 💜</code><span>Use emojis anywhere!</span></div>
+    </div>
+    <p style="margin: 16px 0 0; color: var(--muted); font-size: 14px;">
+        💡 <b>Tip:</b> Colors can be names like <code>red</code>, <code>hotpink</code>, <code>limegreen</code>,
+        or codes like <code>#ff6600</code>. Try changing things and watch what happens!
+    </p>
+</details>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='codelab.js') }}"></script>
+{% endblock %}

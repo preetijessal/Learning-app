@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+{% block title %}My Progress — Tutoring with Sehaj{% endblock %}
+{% block content %}
+<h1>My Progress</h1>
+<p class="lead">Track your scores, earn XP, unlock badges, and build a streak. Everything stays on your own device.</p>
+<div class="card">
+    <label for="student-name">Student name</label>
+    <div class="name-row">
+        <input type="text" id="student-name" placeholder="e.g. Aarav" autocomplete="off">
+        <button type="button" id="save-name" class="btn btn-primary">Save</button>
+    </div>
+    <label style="margin-top: 18px;">Choose your avatar</label>
+    <div class="avatar-picker" id="avatar-picker"></div>
+</div>
+<div class="card" style="margin-top: 20px;">
+    <h2 style="margin-top: 0;">Your Stats</h2>
+    <div class="stats-grid">
+        <div class="stat-block"><div class="stat-block-label">Level</div><div class="stat-block-value" id="stat-level">1</div></div>
+        <div class="stat-block"><div class="stat-block-label">XP</div><div class="stat-block-value" id="stat-xp">0</div></div>
+        <div class="stat-block"><div class="stat-block-label">🔥 Day Streak</div><div class="stat-block-value" id="stat-streak">0</div></div>
+        <div class="stat-block"><div class="stat-block-label">Quizzes Taken</div><div class="stat-block-value" id="stat-quizzes">0</div></div>
+        <div class="stat-block"><div class="stat-block-label">Average Score</div><div class="stat-block-value" id="stat-avg">—</div></div>
+        <div class="stat-block"><div class="stat-block-label">Memory Games</div><div class="stat-block-value" id="stat-memory">0</div></div>
+        <div class="stat-block"><div class="stat-block-label">Best Memory Time</div><div class="stat-block-value" id="stat-best-time">—</div></div>
+        <div class="stat-block"><div class="stat-block-label">Badges Earned</div><div class="stat-block-value" id="stat-badges">0</div></div>
+    </div>
+</div>
+<div class="card" style="margin-top: 20px;">
+    <h2 style="margin-top: 0;">Badges</h2>
+    <div class="badges-grid" id="badges-grid"></div>
+</div>
+<div class="card" style="margin-top: 20px;">
+    <div class="history-header">
+        <h2 style="margin: 0;">Activity History</h2>
+        <button type="button" id="clear-history" class="btn btn-secondary">Clear History</button>
+    </div>
+    <div id="history-list"></div>
+    <div id="history-empty" class="empty-state" hidden>
+        No activity yet. Try a <a href="{{ url_for('quiz_setup') }}">practice quiz</a> or the <a href="{{ url_for('memory_game') }}">memory game</a>!
+    </div>
+</div>
+{% endblock %}
+{% block scripts %}
+<script src="{{ url_for('static', filename='progress.js') }}"></script>
+{% endblock %}

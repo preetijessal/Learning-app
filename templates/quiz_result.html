@@ -1,0 +1,88 @@
+{% extends "base.html" %}
+{% block title %}Quiz Results — Tutoring with Sehaj{% endblock %}
+{% block content %}
+<h1>Quiz Complete</h1>
+<p class="lead">{{ topic }} — Grade {{ grade }}</p>
+<div class="score" id="score-block"
+     data-topic="{{ topic }}"
+     data-topic-key="{{ topic_key }}"
+     data-grade="{{ grade }}"
+     data-score="{{ score }}"
+     data-total="{{ total }}">
+    <div class="big">{{ score }} / {{ total }}</div>
+    <div class="label">
+        {% if score == total %}🎉 Excellent! Perfect score.
+        {% elif score >= total * 0.7 %}🌟 Great job! Keep it up.
+        {% elif score >= total * 0.4 %}💪 Good effort. Try again to improve.
+        {% else %}🌱 Keep practicing — you'll get there.
+        {% endif %}
+    </div>
+    <div class="xp-earned" id="xp-earned" hidden>
+        You earned <span class="xp-earned-amount" id="xp-amount">0</span> XP!
+    </div>
+    <div class="score-saved" id="score-saved" hidden>✓ Saved to your progress</div>
+</div>
+<h2>Review</h2>
+{% for item in history %}
+<div class="review {% if item.correct %}correct{% else %}wrong{% endif %}">
+    <div class="q">{{ item.q }}</div>
+    <div class="a">
+        Your answer: <strong>{{ item.your_answer or "(blank)" }}</strong> ·
+        Correct answer: <strong>{{ item.correct_answer }}</strong>
+    </div>
+    {% if item.explanation %}
+    <div class="explanation">
+        <span class="explanation-label">Why:</span> {{ item.explanation }}
+    </div>
+    {% endif %}
+</div>
+{% endfor %}
+<div class="btn-row" style="margin-top: 20px;">
+    <a href="{{ url_for('quiz_setup') }}" class="btn btn-primary">Try Another Quiz</a>
+    <a href="{{ url_for('progress') }}" class="btn btn-secondary">View My Progress</a>
+    <a href="{{ url_for('home') }}" class="btn btn-secondary">Home</a>
+</div>
+{% endblock %}
+{% block scripts %}
+<script>
+(function () {
+    var el = document.getElementById('score-block');
+    if (!el) return;
+    var score = parseInt(el.dataset.score, 10);
+    var total = parseInt(el.dataset.total, 10);
+    try {
+        var entry = {
+            type: 'quiz',
+            topic: el.dataset.topic,
+            topicKey: el.dataset.topicKey,
+            grade: parseInt(el.dataset.grade, 10),
+            score: score,
+            total: total,
+            date: new Date().toISOString()
+        };
+        var key = 'tws_history';
+        var hist = JSON.parse(localStorage.getItem(key) || '[]');
+        hist.push(entry);
+        if (hist.length > 200) hist = hist.slice(-200);
+        localStorage.setItem(key, JSON.stringify(hist));
+        var saved = document.getElementById('score-saved');
+        if (saved) saved.hidden = false;
+    } catch (e) {}
+    if (window.TWS) {
+        var xpEarned = score * 10 + (score === total ? 50 : 0);
+        if (xpEarned > 0) {
+            TWS.awardXP(xpEarned);
+            var xpEl = document.getElementById('xp-earned');
+            var amtEl = document.getElementById('xp-amount');
+            if (xpEl && amtEl) { amtEl.textContent = '+' + xpEarned; xpEl.hidden = false; }
+            TWS.renderHeaderBadge();
+        }
+        var b = TWS.checkAndAwardBadges();
+        if (b.new.length) setTimeout(function () { TWS.showBadgeToast(b.new); }, 800);
+        if (score === total) {
+            setTimeout(function () { TWS.confetti({ count: 120 }); }, 200);
+        }
+    }
+})();
+</script>
+{% endblock %}

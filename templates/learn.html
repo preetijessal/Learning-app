@@ -1,0 +1,57 @@
+{% extends "base.html" %}
+{% block title %}Learn to Read — Tutoring with Sehaj{% endblock %}
+{% block content %}
+<h1>📚 Learn to Read</h1>
+<p class="lead">For our littlest learners! Tap a letter to hear its sound, tap the speaker to hear the whole word.</p>
+<div class="card">
+    <div class="learn-controls">
+        <div class="learn-control-group">
+            <span class="learn-control-label">Word Length</span>
+            <div class="learn-toggle" id="length-toggle">
+                <button type="button" data-len="3" class="active">3 Letters</button>
+                <button type="button" data-len="4">4 Letters</button>
+            </div>
+        </div>
+        <div class="learn-control-group">
+            <span class="learn-control-label">Mode</span>
+            <div class="learn-toggle" id="mode-toggle">
+                <button type="button" data-mode="learn" class="active">📖 Learn</button>
+                <button type="button" data-mode="practice">🎯 Practice</button>
+            </div>
+        </div>
+        <button type="button" id="shuffle-btn" class="btn btn-secondary">🔀 Shuffle</button>
+    </div>
+</div>
+<div class="card learn-stage" id="learn-stage">
+    <div class="learn-counter" id="learn-counter">Word 1 of 1</div>
+    <div class="learn-emoji" id="learn-emoji">🐱</div>
+    <div class="learn-word" id="learn-word"></div>
+    <div class="learn-actions" id="learn-actions">
+        <button type="button" id="say-word" class="btn btn-primary big-btn">🔊 Say Word</button>
+    </div>
+    <div class="learn-nav">
+        <button type="button" id="prev-btn" class="btn btn-secondary">◀ Previous</button>
+        <button type="button" id="next-btn" class="btn btn-secondary">Next ▶</button>
+    </div>
+</div>
+<div class="card learn-stage" id="practice-stage" hidden>
+    <div class="learn-score" id="practice-score">Right: 0 · Tried: 0</div>
+    <div class="learn-emoji" id="practice-emoji">🐱</div>
+    <div class="practice-question">Which word is this?</div>
+    <div class="practice-options" id="practice-options"></div>
+    <div class="practice-feedback" id="practice-feedback"></div>
+    <button type="button" id="practice-hear" class="btn btn-secondary" style="margin-top: 14px;">🔊 Hear it</button>
+</div>
+<div class="card">
+    <h2 style="margin-top: 0;">For Parents & Teachers</h2>
+    <p style="color: var(--muted); margin: 0;">
+        Sit with your kindergartener and tap each letter together to hear its sound (phonics).
+        Then tap "Say Word" to hear the whole word blended together. Switch to <b>Practice</b>
+        mode once they recognize the word, and let them pick the matching word from a picture.
+        Tap any letter as many times as needed — repetition builds confidence!
+    </p>
+</div>
+{% endblock %}
+{% block scripts %}
+<script src="{{ url_for('static', filename='learn.js') }}"></script>
+{% endblock %}

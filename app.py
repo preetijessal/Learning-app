@@ -381,6 +381,14 @@ QUIZ_TOPICS = {
     "volume": "Volume",
     "pressure": "Pressure, Force & Area (Science)",
     "pressure_concepts": "Pressure Concepts (Word Problems)",
+    # NEW topics below
+    "word_problems": "Word Problems (Math)",
+    "cells_life": "Science: Cells & Living Things",
+    "forces_motion": "Science: Forces & Motion",
+    "water_cycle": "Science: Weather & Water Cycle",
+    "grammar": "English: Grammar & Parts of Speech",
+    "comprehension": "English: Reading Comprehension",
+    "percentages": "Percentages",
 }
 
 QUIZ_LENGTH = 5
@@ -624,6 +632,476 @@ def gen_pressure(grade):
     return question, answer, explanation
 
 
+# NEW: Percentages generator
+def gen_percentages(grade):
+    question_type = random.choice(["find_percent_of", "what_percent", "percent_change"]) if grade >= 6 else random.choice(["find_percent_of", "what_percent"])
+
+    if question_type == "find_percent_of":
+        percents = [10, 20, 25, 50, 75] if grade <= 5 else [5, 15, 30, 35, 40, 60, 70, 80]
+        p = random.choice(percents)
+        whole = random.choice([20, 40, 50, 80, 100, 120, 200]) if grade <= 5 else random.choice([60, 75, 120, 150, 200, 240, 300, 500])
+        ans = round(p * whole / 100, 2)
+        ans_str = str(int(ans)) if ans == int(ans) else str(ans)
+        question = f"What is {p}% of {whole}?"
+        explanation = f"Convert percent to decimal: {p}% = {p/100}. Then multiply: {p/100} × {whole} = {ans_str}."
+        return question, ans_str, explanation
+
+    if question_type == "what_percent":
+        whole = random.choice([20, 25, 40, 50, 80, 100, 200])
+        part = random.choice([i for i in range(1, whole) if (i * 100) % whole == 0])
+        ans = int(part * 100 / whole)
+        question = f"What percentage is {part} out of {whole}?"
+        explanation = f"Divide the part by the whole and multiply by 100: ({part} ÷ {whole}) × 100 = {ans}%."
+        return question, str(ans), explanation
+
+    if question_type == "percent_change":
+        original = random.choice([20, 40, 50, 80, 100, 120, 150, 200])
+        change_pct = random.choice([10, 20, 25, 50])
+        change = int(original * change_pct / 100)
+        direction = random.choice(["increase", "decrease"])
+        new_val = original + change if direction == "increase" else original - change
+        question = f"A price was ${original}. It had a {change_pct}% {direction}. What is the new price?"
+        explanation = f"{change_pct}% of {original} = {change}. New price = {original} {'+ ' + str(change) if direction == 'increase' else '− ' + str(change)} = ${new_val}."
+        return question, str(new_val), explanation
+
+
+# -------------------- NEW: Multiple-Choice Question Banks --------------------
+
+# NEW: Word Problems (Math)
+WORD_PROBLEM_QUESTIONS = [
+    {
+        "q": "A bookshop sold 145 books on Monday and 78 books on Tuesday. How many MORE books were sold on Monday than on Tuesday?",
+        "options": [("A", "67"), ("B", "77"), ("C", "223"), ("D", "87")],
+        "a": "A",
+        "hint": "Subtract the smaller number from the larger: 145 − 78."
+    },
+    {
+        "q": "Emma has $50. She buys 3 notebooks at $4.50 each and a pen for $2.75. How much money does she have left?",
+        "options": [("A", "$34.25"), ("B", "$33.25"), ("C", "$36.25"), ("D", "$43.25")],
+        "a": "B",
+        "hint": "Find cost of 3 notebooks: 3 × $4.50 = $13.50. Add the pen: $13.50 + $2.75 = $16.25. Subtract from $50."
+    },
+    {
+        "q": "A train travels at 90 km/h. How far will it travel in 2 hours and 30 minutes?",
+        "options": [("A", "180 km"), ("B", "200 km"), ("C", "225 km"), ("D", "270 km")],
+        "a": "C",
+        "hint": "2 hours 30 minutes = 2.5 hours. Distance = speed × time = 90 × 2.5."
+    },
+    {
+        "q": "A baker uses 2/3 kg of flour to make one loaf of bread. How much flour is needed for 6 loaves?",
+        "options": [("A", "3 kg"), ("B", "4 kg"), ("C", "5 kg"), ("D", "6 kg")],
+        "a": "B",
+        "hint": "Multiply: 6 × 2/3 = 12/3 = 4 kg."
+    },
+    {
+        "q": "There are 360 students in a school. 45% of them are boys. How many girls are there?",
+        "options": [("A", "162"), ("B", "198"), ("C", "180"), ("D", "216")],
+        "a": "B",
+        "hint": "Boys = 45% of 360 = 162. Girls = 360 − 162 = 198."
+    },
+    {
+        "q": "A rectangle has a perimeter of 48 cm. Its length is 14 cm. What is its width?",
+        "options": [("A", "8 cm"), ("B", "10 cm"), ("C", "12 cm"), ("D", "20 cm")],
+        "a": "B",
+        "hint": "Perimeter = 2 × (length + width). So 48 = 2 × (14 + width). Divide 48 by 2, then subtract 14."
+    },
+    {
+        "q": "Mia earns $12.50 per hour. She works 8 hours on Saturday and 5 hours on Sunday. How much does she earn in total?",
+        "options": [("A", "$100", ), ("B", "$150"), ("C", "$162.50"), ("D", "$187.50")],
+        "a": "C",
+        "hint": "Total hours = 8 + 5 = 13. Earnings = 13 × $12.50."
+    },
+    {
+        "q": "A water tank holds 1,200 litres. It is currently 3/4 full. How many litres of water are in the tank?",
+        "options": [("A", "300 L"), ("B", "600 L"), ("C", "800 L"), ("D", "900 L")],
+        "a": "D",
+        "hint": "Find 3/4 of 1200: (3 ÷ 4) × 1200 = 900 litres."
+    },
+    {
+        "q": "A car uses 8 litres of fuel every 100 km. How much fuel does it need for a 350 km trip?",
+        "options": [("A", "24 L"), ("B", "28 L"), ("C", "32 L"), ("D", "40 L")],
+        "a": "B",
+        "hint": "Fuel per km = 8 ÷ 100 = 0.08 L. For 350 km: 0.08 × 350 = 28 litres."
+    },
+    {
+        "q": "A bag of apples costs $3.60. If you buy 4 bags, how much change do you get from $20?",
+        "options": [("A", "$5.60"), ("B", "$6.40"), ("C", "$14.40"), ("D", "$16.40")],
+        "a": "B",
+        "hint": "Cost of 4 bags = 4 × $3.60 = $14.40. Change = $20.00 − $14.40."
+    },
+    {
+        "q": "A class of 30 students took a test. 18 students scored above 70%. What percentage scored 70% or below?",
+        "options": [("A", "30%"), ("B", "40%"), ("C", "50%"), ("D", "60%")],
+        "a": "B",
+        "hint": "Students at 70% or below = 30 − 18 = 12. Percentage = (12 ÷ 30) × 100."
+    },
+    {
+        "q": "A jacket costs $80. It is on sale with a 25% discount. What is the sale price?",
+        "options": [("A", "$55"), ("B", "$60"), ("C", "$65"), ("D", "$75")],
+        "a": "B",
+        "hint": "Discount = 25% of $80 = $20. Sale price = $80 − $20 = $60."
+    },
+]
+
+# NEW: Science — Cells & Living Things
+CELLS_LIFE_QUESTIONS = [
+    {
+        "q": "What is the basic unit of all living things?",
+        "options": [("A", "Atom"), ("B", "Cell"), ("C", "Molecule"), ("D", "Organ")],
+        "a": "B",
+        "hint": "All living organisms — from bacteria to humans — are made of this."
+    },
+    {
+        "q": "What is the function of the mitochondria in a cell?",
+        "options": [("A", "Controls what enters and exits the cell"), ("B", "Stores the cell's genetic information"), ("C", "Produces energy for the cell"), ("D", "Makes food using sunlight")],
+        "a": "C",
+        "hint": "Think of it as the 'powerhouse' — it converts food into energy the cell can use."
+    },
+    {
+        "q": "Which of these is found in plant cells but NOT in animal cells?",
+        "options": [("A", "Cell membrane"), ("B", "Nucleus"), ("C", "Mitochondria"), ("D", "Cell wall")],
+        "a": "D",
+        "hint": "Animal cells have a flexible membrane. Plant cells have an extra rigid structure outside that."
+    },
+    {
+        "q": "What process do plant cells use to make their own food?",
+        "options": [("A", "Respiration"), ("B", "Digestion"), ("C", "Photosynthesis"), ("D", "Circulation")],
+        "a": "C",
+        "hint": "Plants use sunlight, water, and CO₂ to produce glucose. The green pigment chlorophyll helps."
+    },
+    {
+        "q": "Which gas do plants absorb during photosynthesis?",
+        "options": [("A", "Oxygen"), ("B", "Nitrogen"), ("C", "Carbon dioxide"), ("D", "Hydrogen")],
+        "a": "C",
+        "hint": "Plants take in CO₂ from the air through tiny pores called stomata."
+    },
+    {
+        "q": "Which gas do plants release during photosynthesis?",
+        "options": [("A", "Carbon dioxide"), ("B", "Nitrogen"), ("C", "Water vapour"), ("D", "Oxygen")],
+        "a": "D",
+        "hint": "Photosynthesis produces glucose and a gas that humans and animals need to breathe."
+    },
+    {
+        "q": "What does the nucleus of a cell do?",
+        "options": [("A", "Produces energy"), ("B", "Controls the cell and contains DNA"), ("C", "Allows substances to pass in and out"), ("D", "Stores water")],
+        "a": "B",
+        "hint": "Think of it as the 'control centre' or 'brain' of the cell."
+    },
+    {
+        "q": "What is the function of the cell membrane?",
+        "options": [("A", "Makes food for the cell"), ("B", "Provides rigid support"), ("C", "Controls what enters and exits the cell"), ("D", "Contains chlorophyll")],
+        "a": "C",
+        "hint": "It acts like a gatekeeper — deciding what goes in and out of the cell."
+    },
+    {
+        "q": "Which part of the plant cell contains chlorophyll?",
+        "options": [("A", "Vacuole"), ("B", "Cell wall"), ("C", "Nucleus"), ("D", "Chloroplast")],
+        "a": "D",
+        "hint": "This green-coloured organelle is where photosynthesis actually happens."
+    },
+    {
+        "q": "True or False: All living things are made of cells.",
+        "options": [("A", "True — every living organism is made of one or more cells"), ("B", "False — only animals are made of cells"), ("C", "False — plants are not made of cells"), ("D", "False — only large organisms have cells")],
+        "a": "A",
+        "hint": "This is one of the key principles of biology — called the Cell Theory."
+    },
+    {
+        "q": "What does the large vacuole in a plant cell do?",
+        "options": [("A", "Makes energy"), ("B", "Controls the cell"), ("C", "Stores water and helps keep the cell firm"), ("D", "Absorbs sunlight")],
+        "a": "C",
+        "hint": "When a plant is well watered, this structure fills up and keeps the plant from drooping."
+    },
+    {
+        "q": "Which of these is NOT a living thing?",
+        "options": [("A", "Mushroom"), ("B", "Bacterium"), ("C", "Rock"), ("D", "Fern")],
+        "a": "C",
+        "hint": "Living things grow, reproduce, and respond to their environment. Which one does none of these?"
+    },
+]
+
+# NEW: Science — Forces & Motion
+FORCES_MOTION_QUESTIONS = [
+    {
+        "q": "A car travels 120 km in 2 hours. What is its average speed?",
+        "options": [("A", "60 km/h"), ("B", "80 km/h"), ("C", "100 km/h"), ("D", "240 km/h")],
+        "a": "A",
+        "hint": "Speed = Distance ÷ Time = 120 ÷ 2."
+    },
+    {
+        "q": "Why does a ball eventually stop rolling on a flat surface even if nothing blocks it?",
+        "options": [("A", "Gravity pulls it sideways"), ("B", "The ball runs out of energy suddenly"), ("C", "Friction between the ball and surface slows it down"), ("D", "Air disappears around the ball")],
+        "a": "C",
+        "hint": "Think about the force that acts against motion at the surface where two objects touch."
+    },
+    {
+        "q": "Which of these is a NON-CONTACT force?",
+        "options": [("A", "Friction"), ("B", "Pushing a box"), ("C", "Kicking a ball"), ("D", "Gravity")],
+        "a": "D",
+        "hint": "This force acts on objects without them touching — like the pull between Earth and the Moon."
+    },
+    {
+        "q": "What happens to friction when a surface becomes rougher?",
+        "options": [("A", "Friction decreases"), ("B", "Friction increases"), ("C", "Friction disappears"), ("D", "Friction stays the same")],
+        "a": "B",
+        "hint": "More bumps and ridges on a surface means more resistance to movement."
+    },
+    {
+        "q": "A bicycle slows down when the rider stops pedalling. What force is mainly responsible?",
+        "options": [("A", "Magnetism"), ("B", "Air resistance and friction"), ("C", "Gravity pulling it forward"), ("D", "The engine stopping")],
+        "a": "B",
+        "hint": "Two forces act against the bicycle's motion — one between the tires and ground, one from the air."
+    },
+    {
+        "q": "According to Newton's First Law, what happens to a moving object if no force acts on it?",
+        "options": [("A", "It gradually slows down and stops"), ("B", "It speeds up"), ("C", "It keeps moving at the same speed in the same direction"), ("D", "It moves in a circle")],
+        "a": "C",
+        "hint": "Newton's First Law says objects don't change their motion unless a force makes them."
+    },
+    {
+        "q": "Which of these is a CONTACT force?",
+        "options": [("A", "Gravity"), ("B", "Magnetism"), ("C", "Friction"), ("D", "Static electricity pulling hair")],
+        "a": "C",
+        "hint": "Contact forces only act when two objects are physically touching."
+    },
+    {
+        "q": "A car travels 300 km in 3 hours. What is its average speed?",
+        "options": [("A", "90 km/h"), ("B", "100 km/h"), ("C", "150 km/h"), ("D", "900 km/h")],
+        "a": "B",
+        "hint": "Speed = Distance ÷ Time = 300 ÷ 3."
+    },
+    {
+        "q": "Why is it harder to stop on an icy road than on dry pavement?",
+        "options": [("A", "Ice makes cars go faster"), ("B", "Ice is heavier than pavement"), ("C", "Ice reduces friction, so there is less braking force"), ("D", "Cold weather weakens car engines")],
+        "a": "C",
+        "hint": "Less friction = harder to stop. That's why icy roads are dangerous."
+    },
+    {
+        "q": "What is the unit of force?",
+        "options": [("A", "Kilogram (kg)"), ("B", "Metre (m)"), ("C", "Newton (N)"), ("D", "Pascal (Pa)")],
+        "a": "C",
+        "hint": "Named after the scientist who described the laws of motion."
+    },
+    {
+        "q": "A book sits still on a table. What does this tell us about the forces acting on it?",
+        "options": [("A", "No forces are acting on it"), ("B", "Only gravity acts on it"), ("C", "The forces are balanced — gravity down and the table pushing up"), ("D", "The book is producing its own force")],
+        "a": "C",
+        "hint": "If an object is not moving, all forces on it must be balanced — they cancel each other out."
+    },
+    {
+        "q": "Which example shows a force CHANGING THE DIRECTION of an object?",
+        "options": [("A", "Pushing a stationary box to make it move"), ("B", "A goalkeeper kicking a ball that was rolling toward the net"), ("C", "Lifting a heavy suitcase"), ("D", "Squeezing clay")],
+        "a": "B",
+        "hint": "Forces can change speed, direction, or shape. Which example shows a change in direction?"
+    },
+]
+
+# NEW: Science — Weather & Water Cycle
+WATER_CYCLE_QUESTIONS = [
+    {
+        "q": "What are the four main stages of the water cycle in the correct order?",
+        "options": [("A", "Condensation → Precipitation → Evaporation → Collection"), ("B", "Evaporation → Condensation → Precipitation → Collection"), ("C", "Precipitation → Evaporation → Collection → Condensation"), ("D", "Collection → Precipitation → Condensation → Evaporation")],
+        "a": "B",
+        "hint": "Water heats up and rises first, then cools and forms clouds, then falls, then gathers."
+    },
+    {
+        "q": "What causes evaporation in the water cycle?",
+        "options": [("A", "Cold temperatures freezing the water"), ("B", "Wind blowing water away"), ("C", "The Sun's heat warming water so it turns into water vapour"), ("D", "Clouds absorbing water from the ground")],
+        "a": "C",
+        "hint": "The Sun heats oceans, lakes, and rivers. The water turns from liquid to gas (water vapour)."
+    },
+    {
+        "q": "What is condensation in the water cycle?",
+        "options": [("A", "Water vapour rising into the atmosphere"), ("B", "Water falling from clouds as rain or snow"), ("C", "Water vapour cooling and turning back into liquid droplets, forming clouds"), ("D", "Water soaking into the ground")],
+        "a": "C",
+        "hint": "It's the opposite of evaporation. When the gas cools down enough, it becomes liquid again."
+    },
+    {
+        "q": "What is precipitation?",
+        "options": [("A", "Water heating up and becoming steam"), ("B", "Water vapour forming clouds"), ("C", "Water falling from clouds as rain, snow, sleet, or hail"), ("D", "Rivers flowing into the ocean")],
+        "a": "C",
+        "hint": "Precipitation is the word for all forms of water falling from the sky."
+    },
+    {
+        "q": "What is the difference between weather and climate?",
+        "options": [("A", "Weather is long-term average conditions; climate is the daily conditions"), ("B", "Weather is what happens day to day; climate is the long-term average for a region"), ("C", "They mean exactly the same thing"), ("D", "Weather is only about temperature; climate includes wind and rain")],
+        "a": "B",
+        "hint": "One changes day to day; the other describes patterns over many years."
+    },
+    {
+        "q": "Why is the water cycle important for life on Earth? Choose the BEST answer.",
+        "options": [("A", "It creates mountains and volcanoes"), ("B", "It provides fresh water for drinking and supports plant growth and rainfall"), ("C", "It keeps the Sun shining brightly"), ("D", "It prevents earthquakes")],
+        "a": "B",
+        "hint": "Think about where the fresh water we drink and the rain that grows our food comes from."
+    },
+    {
+        "q": "Where does most of the water that evaporates into the atmosphere come from?",
+        "options": [("A", "Underground rivers"), ("B", "Clouds"), ("C", "Oceans, lakes, and rivers on the Earth's surface"), ("D", "Polar ice caps only")],
+        "a": "C",
+        "hint": "Most of the Earth's surface is water. The Sun heats it, turning it into vapour."
+    },
+    {
+        "q": "What happens to water after it falls as precipitation?",
+        "options": [("A", "It immediately evaporates again"), ("B", "It collects in rivers, lakes, and oceans, or soaks into the ground"), ("C", "It turns into rock"), ("D", "It floats up to form new clouds immediately")],
+        "a": "B",
+        "hint": "This stage is called 'collection' — water gathers before the cycle starts again."
+    },
+    {
+        "q": "What type of cloud is typically associated with heavy rain and thunderstorms?",
+        "options": [("A", "Cirrus"), ("B", "Stratus"), ("C", "Cumulonimbus"), ("D", "Cumulus")],
+        "a": "C",
+        "hint": "This tall, dark, towering cloud type is sometimes called a thundercloud."
+    },
+    {
+        "q": "A puddle on the street disappears after a sunny day even though nobody wiped it up. Which stage of the water cycle explains this?",
+        "options": [("A", "Condensation"), ("B", "Precipitation"), ("C", "Collection"), ("D", "Evaporation")],
+        "a": "D",
+        "hint": "The Sun's heat caused the liquid water to turn into water vapour and rise into the air."
+    },
+]
+
+# NEW: English — Grammar & Parts of Speech
+GRAMMAR_QUESTIONS = [
+    {
+        "q": "Identify the NOUN in this sentence: 'The brave knight defeated the enormous dragon.'",
+        "options": [("A", "brave"), ("B", "defeated"), ("C", "knight"), ("D", "enormous")],
+        "a": "C",
+        "hint": "A noun is a person, place, thing, or idea. Look for the 'who' in the sentence."
+    },
+    {
+        "q": "Identify the VERB in this sentence: 'The brave knight quickly defeated the enormous dragon.'",
+        "options": [("A", "brave"), ("B", "defeated"), ("C", "quickly"), ("D", "enormous")],
+        "a": "B",
+        "hint": "A verb is an action or state word — what the subject is doing."
+    },
+    {
+        "q": "Identify the ADJECTIVE in this sentence: 'The brave knight defeated the enormous dragon.'",
+        "options": [("A", "knight"), ("B", "defeated"), ("C", "quickly"), ("D", "brave")],
+        "a": "D",
+        "hint": "An adjective describes a noun. Which word describes what the knight is like?"
+    },
+    {
+        "q": "Identify the ADVERB in this sentence: 'The brave knight quickly defeated the enormous dragon.'",
+        "options": [("A", "quickly"), ("B", "brave"), ("C", "enormous"), ("D", "knight")],
+        "a": "A",
+        "hint": "An adverb describes how, when, or where an action happens. It often ends in '-ly'."
+    },
+    {
+        "q": "Which sentence is grammatically CORRECT?",
+        "options": [("A", "They was going to the park."), ("B", "They were going to the park."), ("C", "They is going to the park."), ("D", "They be going to the park.")],
+        "a": "B",
+        "hint": "The subject 'They' is plural, so it needs a plural verb form."
+    },
+    {
+        "q": "Which word is a PRONOUN in this sentence: 'Maria forgot her lunchbox at school.'",
+        "options": [("A", "Maria"), ("B", "forgot"), ("C", "her"), ("D", "lunchbox")],
+        "a": "C",
+        "hint": "A pronoun replaces a noun. Which word stands in for Maria's name?"
+    },
+    {
+        "q": "What type of sentence is this: 'It was raining, but we still played outside.'",
+        "options": [("A", "Simple sentence"), ("B", "Compound sentence"), ("C", "Complex sentence"), ("D", "Fragment")],
+        "a": "B",
+        "hint": "This sentence has TWO main ideas joined by a connecting word (but, and, or, so)."
+    },
+    {
+        "q": "Which word is a suitable ADVERB to complete this sentence: 'The dog barked ________.'",
+        "options": [("A", "loudly"), ("B", "loud"), ("C", "louder"), ("D", "loudness")],
+        "a": "A",
+        "hint": "An adverb describing how the dog barked. Adverbs describing manner often end in '-ly'."
+    },
+    {
+        "q": "Which sentence uses the CORRECT punctuation?",
+        "options": [("A", "where are you going asked the teacher"), ("B", "\"Where are you going?\" asked the teacher."), ("C", "Where are you going, asked the teacher"), ("D", "where are you going. asked the teacher")],
+        "a": "B",
+        "hint": "Spoken words (dialogue) go inside quotation marks, with a question mark if it is a question."
+    },
+    {
+        "q": "Which of these is a COMPLEX sentence?",
+        "options": [("A", "The cat sat on the mat."), ("B", "The cat sat and the dog slept."), ("C", "The cat sat on the mat because it was warm there."), ("D", "The cat. The mat.")],
+        "a": "C",
+        "hint": "A complex sentence has a main clause AND a dependent clause joined by words like 'because', 'although', 'when', or 'if'."
+    },
+    {
+        "q": "What is the SUBJECT of this sentence: 'Every morning, the children walk to school.'",
+        "options": [("A", "Every morning"), ("B", "walk"), ("C", "school"), ("D", "the children")],
+        "a": "D",
+        "hint": "The subject is WHO or WHAT the sentence is about — who is doing the action?"
+    },
+    {
+        "q": "Which word correctly completes the sentence: 'She _______ finished her homework before dinner.'",
+        "options": [("A", "quick"), ("B", "quickest"), ("C", "quickly"), ("D", "quickness")],
+        "a": "C",
+        "hint": "We need a word describing HOW she finished — an adverb, not an adjective."
+    },
+]
+
+# NEW: English — Reading Comprehension
+COMPREHENSION_QUESTIONS = [
+    {
+        "q": "PASSAGE: 'The ocean covers more than 70% of Earth's surface and is home to millions of species. Scientists estimate that more than 80% of the ocean remains unexplored. The deep ocean is pitch black, freezing cold, and under enormous pressure.'\n\nAccording to the passage, what percentage of the ocean remains unexplored?",
+        "options": [("A", "70%"), ("B", "80%"), ("C", "50%"), ("D", "90%")],
+        "a": "B",
+        "hint": "Look for the exact number mentioned in the passage about unexplored ocean."
+    },
+    {
+        "q": "PASSAGE: 'The ocean covers more than 70% of Earth's surface and is home to millions of species. Scientists estimate that more than 80% of the ocean remains unexplored. The deep ocean is pitch black, freezing cold, and under enormous pressure. Strange creatures thrive there, including the anglerfish, which uses a glowing lure to attract prey in the darkness.'\n\nHow does the anglerfish find its prey in the dark?",
+        "options": [("A", "It uses its sharp eyesight"), ("B", "It uses a glowing lure to attract prey"), ("C", "It uses sonar like a bat"), ("D", "It follows ocean currents")],
+        "a": "B",
+        "hint": "Find the sentence in the passage that describes the anglerfish specifically."
+    },
+    {
+        "q": "PASSAGE: 'Every year, new ocean species are discovered, reminding us how much we still have to learn about our planet. The deep ocean is one of the most mysterious places on Earth.'\n\nWhat is the MAIN IDEA of this passage?",
+        "options": [("A", "Anglerfish are dangerous predators"), ("B", "The ocean is too deep for humans to ever explore"), ("C", "The ocean is largely unexplored and full of mysteries yet to be discovered"), ("D", "Scientists have mapped the entire ocean floor")],
+        "a": "C",
+        "hint": "The main idea is the overall message of the passage, not just one detail."
+    },
+    {
+        "q": "PASSAGE: 'Bees are essential to our food supply. As they fly from flower to flower collecting nectar, they transfer pollen, which allows plants to reproduce. Scientists estimate that one third of all the food we eat depends on pollination by bees.'\n\nWhat do bees do as they collect nectar?",
+        "options": [("A", "They build their honeycombs"), ("B", "They transfer pollen between flowers, helping plants reproduce"), ("C", "They drink water from flowers"), ("D", "They protect flowers from insects")],
+        "a": "B",
+        "hint": "Look for what happens AS the bees collect nectar — what else are they doing at the same time?"
+    },
+    {
+        "q": "PASSAGE: 'Bees are essential to our food supply. Scientists estimate that one third of all the food we eat depends on pollination by bees. Without bees, many fruits, vegetables, and nuts would disappear from our diet.'\n\nAccording to the passage, what fraction of our food depends on bee pollination?",
+        "options": [("A", "One half"), ("B", "Two thirds"), ("C", "One quarter"), ("D", "One third")],
+        "a": "D",
+        "hint": "Look for the fraction stated directly in the passage."
+    },
+    {
+        "q": "PASSAGE: 'The Amazon rainforest covers over 5.5 million square kilometres and produces about 20% of the world's oxygen. It is home to 10% of all species on Earth. However, deforestation is destroying around 10,000 square kilometres of forest every year.'\n\nWhat is one THREAT mentioned to the Amazon rainforest?",
+        "options": [("A", "Flooding from the Amazon River"), ("B", "Earthquakes destroying the trees"), ("C", "Deforestation — cutting down the forest"), ("D", "Invasive animals eating all the plants")],
+        "a": "C",
+        "hint": "The passage mentions something that is 'destroying' the forest. What word is used?"
+    },
+    {
+        "q": "PASSAGE: 'The Amazon rainforest produces about 20% of the world's oxygen and is home to 10% of all species on Earth.'\n\nWhat TWO important roles does the Amazon play? Choose the BEST answer.",
+        "options": [("A", "It provides clean drinking water and generates electricity"), ("B", "It produces oxygen and provides habitat for a huge variety of species"), ("C", "It controls the world's temperature and creates rainfall only in South America"), ("D", "It produces food for humans and supplies timber to the world")],
+        "a": "B",
+        "hint": "Both roles are stated clearly in the passage — look for what it 'produces' and what it is 'home to'."
+    },
+    {
+        "q": "PASSAGE: 'Marie Curie was the first woman to win a Nobel Prize, and the only person ever to win Nobel Prizes in two different sciences — Physics in 1903 and Chemistry in 1911. Born in Poland, she moved to Paris to study because women were not allowed to attend university in her home country at the time.'\n\nWhy did Marie Curie move to Paris?",
+        "options": [("A", "Paris had better laboratories than Poland"), ("B", "She wanted to be closer to other scientists"), ("C", "Women were not permitted to attend university in Poland at the time"), ("D", "She was offered a scholarship to study in France")],
+        "a": "C",
+        "hint": "The passage gives a direct reason. Look for the sentence about why she left her home country."
+    },
+    {
+        "q": "PASSAGE: 'Marie Curie was the first woman to win a Nobel Prize, and the only person ever to win Nobel Prizes in two different sciences — Physics in 1903 and Chemistry in 1911.'\n\nWhat makes Marie Curie's Nobel Prize achievement unique?",
+        "options": [("A", "She was the youngest person to ever win a Nobel Prize"), ("B", "She is the only person to have won Nobel Prizes in two different sciences"), ("C", "She won three Nobel Prizes in total"), ("D", "She shared her prize with Albert Einstein")],
+        "a": "B",
+        "hint": "The passage says she is the 'only person ever to...' — what exactly does it say she is the only one to have done?"
+    },
+    {
+        "q": "READING SKILL — When answering a comprehension question asking you to EXPLAIN something, what should you always do?",
+        "options": [("A", "Give your personal opinion only"), ("B", "Copy the question back out as your answer"), ("C", "Use evidence from the text to support your answer"), ("D", "Write as many sentences as possible regardless of relevance")],
+        "a": "C",
+        "hint": "Good comprehension answers always refer back to what the passage actually says."
+    },
+]
+
+
+# -------------------- ORIGINAL: Pressure Concept Questions --------------------
+
 PRESSURE_CONCEPT_QUESTIONS = [
     {"q": "Why does a person sink in snow when wearing normal shoes?", "options": [("A", "Because the person's weight is too heavy for snow"), ("B", "Because normal shoes have a small area, so the pressure on the snow is high"), ("C", "Because snow always melts under any shoe"), ("D", "Because the shoes are too warm")], "a": "B", "hint": "Pressure = Force ÷ Area. A small shoe area means a large pressure on the snow."},
     {"q": "Why do snowshoes help a person walk on snow without sinking?", "options": [("A", "They make the person lighter"), ("B", "They keep the feet warm so snow doesn't stick"), ("C", "They spread the body's weight over a larger area, lowering the pressure on the snow"), ("D", "They have spikes that grip the snow")], "a": "C", "hint": "Same weight, but a much bigger area underneath. What does that do to pressure?"},
@@ -639,21 +1117,45 @@ PRESSURE_CONCEPT_QUESTIONS = [
     {"q": "A heavy box is placed first on its small face and then on its larger face on a soft floor. In which case is the pressure on the floor greater?", "options": [("A", "When placed on the small face — same weight over a smaller area means more pressure"), ("B", "When placed on the larger face"), ("C", "Pressure is the same in both cases"), ("D", "Pressure becomes zero on the small face")], "a": "A", "hint": "Same force (weight). The smaller the area, the greater the pressure."},
 ]
 
+# -------------------- Map all MC question banks --------------------
+
+MC_QUESTION_BANKS = {
+    "pressure_concepts": PRESSURE_CONCEPT_QUESTIONS,
+    "word_problems":     WORD_PROBLEM_QUESTIONS,
+    "cells_life":        CELLS_LIFE_QUESTIONS,
+    "forces_motion":     FORCES_MOTION_QUESTIONS,
+    "water_cycle":       WATER_CYCLE_QUESTIONS,
+    "grammar":           GRAMMAR_QUESTIONS,
+    "comprehension":     COMPREHENSION_QUESTIONS,
+}
+
 GENERATORS = {
-    "arithmetic": gen_arithmetic,
-    "fractions": gen_fractions,
-    "area": gen_area,
-    "volume": gen_volume,
-    "pressure": gen_pressure,
+    "arithmetic":  gen_arithmetic,
+    "fractions":   gen_fractions,
+    "area":        gen_area,
+    "volume":      gen_volume,
+    "pressure":    gen_pressure,
+    "percentages": gen_percentages,  # NEW
 }
 
 
 def build_questions(topic, grade, count):
-    if topic == "pressure_concepts":
-        pool = list(PRESSURE_CONCEPT_QUESTIONS)
+    # Multiple-choice banks
+    if topic in MC_QUESTION_BANKS:
+        pool = list(MC_QUESTION_BANKS[topic])
         random.shuffle(pool)
         selected = pool[:count]
-        return [{"q": item["q"], "a": item["a"], "options": [list(opt) for opt in item["options"]], "hint": item["hint"], "explanation": item["hint"]} for item in selected]
+        return [
+            {
+                "q": item["q"],
+                "a": item["a"],
+                "options": [list(opt) for opt in item["options"]],
+                "hint": item["hint"],
+                "explanation": item["hint"],
+            }
+            for item in selected
+        ]
+    # Generated (numeric) topics
     gen = GENERATORS[topic]
     out = []
     for _ in range(count):

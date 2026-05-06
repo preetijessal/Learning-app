@@ -391,7 +391,10 @@ QUIZ_TOPICS = {
     "percentages": "Percentages",
 }
 
-QUIZ_LENGTH = 5
+QUIZ_LENGTH = 5      # questions per level
+QUIZ_LEVELS = 3     # total levels
+# Grade boost per level so generated questions get harder
+LEVEL_GRADE_BOOST = {1: 0, 2: 1, 3: 2}
 
 
 def gen_arithmetic(grade):
@@ -1189,8 +1192,20 @@ def quiz_setup():
                 raise ValueError
         except ValueError:
             return render_template("quiz_setup.html", topics=QUIZ_TOPICS, error="Please choose a valid grade and topic.")
-        questions = build_questions(topic, grade, QUIZ_LENGTH)
-        session["quiz"] = {"grade": grade, "topic": topic, "questions": questions, "index": 0, "score": 0, "history": []}
+        # Start at Level 1
+        boosted_grade = min(9, grade + LEVEL_GRADE_BOOST[1])
+        questions = build_questions(topic, boosted_grade, QUIZ_LENGTH)
+        session["quiz"] = {
+            "grade": grade,
+            "topic": topic,
+            "questions": questions,
+            "index": 0,
+            "level": 1,
+            "level_score": 0,       # score for current level only
+            "total_score": 0,       # running total across all levels
+            "history": [],
+            "level_histories": [],  # list of per-level history lists
+        }
         return redirect(url_for("quiz_play"))
     return render_template("quiz_setup.html", topics=QUIZ_TOPICS, error=None)
 
@@ -1207,15 +1222,91 @@ def quiz_play():
         user_answer = request.form.get("answer", "").strip()
         correct = check_answer(user_answer, question["a"])
         if correct:
-            quiz["score"] += 1
-        quiz["history"].append({"q": question["q"], "your_answer": user_answer, "correct_answer": question["a"], "correct": correct, "explanation": question.get("explanation", "")})
+            quiz["level_score"] += 1
+            quiz["total_score"] += 1
+        quiz["history"].append({
+            "q": question["q"],
+            "your_answer": user_answer,
+            "correct_answer": question["a"],
+            "correct": correct,
+            "explanation": question.get("explanation", ""),
+        })
         quiz["index"] += 1
         session["quiz"] = quiz
+        # Finished this level's questions?
         if quiz["index"] >= len(quiz["questions"]):
-            return redirect(url_for("quiz_result"))
-        feedback = {"correct": correct, "correct_answer": question["a"], "explanation": question.get("explanation", "")}
+            return redirect(url_for("quiz_level_complete"))
+        feedback = {
+            "correct": correct,
+            "correct_answer": question["a"],
+            "explanation": question.get("explanation", ""),
+        }
     current = quiz["questions"][quiz["index"]]
-    return render_template("quiz_play.html", question=current["q"], options=current.get("options"), hint=current.get("hint"), index=quiz["index"] + 1, total=len(quiz["questions"]), topic=QUIZ_TOPICS[quiz["topic"]], grade=quiz["grade"], feedback=feedback)
+    return render_template(
+        "quiz_play.html",
+        question=current["q"],
+        options=current.get("options"),
+        hint=current.get("hint"),
+        index=quiz["index"] + 1,
+        total=len(quiz["questions"]),
+        topic=QUIZ_TOPICS[quiz["topic"]],
+        grade=quiz["grade"],
+        level=quiz["level"],
+        total_levels=QUIZ_LEVELS,
+        feedback=feedback,
+    )
+
+
+@app.route("/quiz/level-complete")
+def quiz_level_complete():
+    quiz = session.get("quiz")
+    if not quiz:
+        return redirect(url_for("quiz_setup"))
+
+    level       = quiz["level"]
+    level_score = quiz["level_score"]
+    passed      = (level_score == QUIZ_LENGTH)        # 5/5 to advance
+    last_level  = (level == QUIZ_LEVELS)
+
+    # Save this level's history
+    quiz["level_histories"].append(list(quiz["history"]))
+
+    if passed and not last_level:
+        # Advance to next level — generate harder questions
+        next_level = level + 1
+        boosted_grade = min(9, quiz["grade"] + LEVEL_GRADE_BOOST[next_level])
+        next_questions = build_questions(quiz["topic"], boosted_grade, QUIZ_LENGTH)
+        quiz["level"]        = next_level
+        quiz["level_score"]  = 0
+        quiz["questions"]    = next_questions
+        quiz["index"]        = 0
+        quiz["history"]      = []
+        session["quiz"]      = quiz
+        return render_template(
+            "quiz_level_complete.html",
+            level=level,
+            level_score=level_score,
+            quiz_length=QUIZ_LENGTH,
+            passed=True,
+            last_level=False,
+            next_level=next_level,
+            total_levels=QUIZ_LEVELS,
+            topic=QUIZ_TOPICS[quiz["topic"]],
+        )
+    else:
+        # Either failed (didn't get 5/5) or completed all levels
+        session["quiz"] = quiz
+        return render_template(
+            "quiz_level_complete.html",
+            level=level,
+            level_score=level_score,
+            quiz_length=QUIZ_LENGTH,
+            passed=passed,
+            last_level=last_level,
+            next_level=None,
+            total_levels=QUIZ_LEVELS,
+            topic=QUIZ_TOPICS[quiz["topic"]],
+        )
 
 
 @app.route("/quiz/result")
@@ -1223,7 +1314,23 @@ def quiz_result():
     quiz = session.get("quiz")
     if not quiz:
         return redirect(url_for("quiz_setup"))
-    return render_template("quiz_result.html", score=quiz["score"], total=len(quiz["questions"]), history=quiz["history"], topic=QUIZ_TOPICS[quiz["topic"]], topic_key=quiz["topic"], grade=quiz["grade"])
+    # Flatten all level histories for the review screen
+    all_history = []
+    for h in quiz.get("level_histories", []):
+        all_history.extend(h)
+    if quiz.get("history"):          # current level if navigated here directly
+        all_history.extend(quiz["history"])
+    return render_template(
+        "quiz_result.html",
+        score=quiz["total_score"],
+        total=QUIZ_LENGTH * quiz["level"],
+        history=all_history,
+        topic=QUIZ_TOPICS[quiz["topic"]],
+        topic_key=quiz["topic"],
+        grade=quiz["grade"],
+        levels_completed=quiz["level"],
+        total_levels=QUIZ_LEVELS,
+    )
 
 
 @app.route("/progress")

@@ -1343,7 +1343,14 @@ def codelab():
     return render_template("codelab.html")
 
 
+@app.route("/learn")
+def learn_to_read():
+    return render_template("learn.html")
 
+
+@app.route("/division-multiplication")
+def division_multiplication():
+    return render_template("division_multiplication.html")
 
 
 if __name__ == "__main__":
